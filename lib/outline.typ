@@ -12,7 +12,7 @@
   author: none,
   date: auto,
 ) = {
-  set page(footer: none, columns: 1)
+  set page(footer: none, background: none, columns: 1)
   set align(center + horizon)
   text(25pt, title)
 
@@ -80,7 +80,7 @@
   })
 }
 
-#let subject(body, size: 21.5pt, spacing: 1em, font: heiti, top: 0pt, bottom: 0pt) = {
+#let subject(body, size: 21.5pt, spacing: 1em, font: heiti, top: -1.3em, bottom: -1.3em) = {
   v(top)
   align(center, text(tracking: spacing, font: font, size)[#body])
   v(bottom)
@@ -128,7 +128,7 @@
 
 #let notice(label: "1.", indent: 2em, hanging-indent: auto, ..children) = context {
   text(font: heiti)[注意事项：]
-  set enum(numbering: label, indent: indent)
+  set enum(numbering: label, indent: indent, spacing: 1.3em)
   set par(
     hanging-indent: if hanging-indent == auto {
       -indent - enum.body-indent - measure(label).width
@@ -206,16 +206,15 @@
 
     // 解析题号的格式化
     #counter-explain.step()
-    #let label = none
     #let space = 0em
-    #if show-number {
-      label = context numbering(label-format, ..counter-explain.get())
+    #let label = if show-number {
+      context numbering(label-format, ..counter-explain.get())
       space = spacing
     }
     #terms(
       hanging-indent: 0em,
       separator: h(space, weak: true),
-      (label, text(color, _trim-content(body))),
+      terms.item(label, text(color, _trim-content(body))),
     )
   ]
   v(bottom)
@@ -232,7 +231,7 @@
   name: "草稿纸",
   student-info: (
     姓名: underline[~~~~~~~~~~~~~],
-    准考证号: underline[~~~~~~~~~~~~~~~~~~~~~~~~~~],
+    考生号: underline[~~~~~~~~~~~~~~~~~~~~~~~~~~],
     考场号: underline[~~~~~~~],
     座位号: underline[~~~~~~~],
   ),

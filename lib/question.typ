@@ -15,16 +15,21 @@
 )
 
 // 设置每节每题的默认分数
-#let set-pts(..pts) = {
+#let set-per-pts(..pts) = context {
   let points = pts.pos()
   assert(
     points.all(item => item == none or type(item) in (int, float) and item > 0),
     message: "points expected positive number or none, found " + repr(points),
   )
-
+  let chapter-index = counter-chapter.get().first() - 1
   question-count-points-state.update(pre => {
     let zeros = points.len() * (0,)
-    pre.push(zeros.zip(points, zeros))
+    let init-cnt-pts = zeros.zip(points, zeros)
+    if pre.len() == chapter-index {
+      pre.push(init-cnt-pts)
+    } else {
+      pre.at(chapter-index) += init-cnt-pts
+    }
     pre
   })
 }
@@ -117,13 +122,20 @@
     indent: indent,
     hanging-indent: if hanging-indent == auto { measure(label).width + 1em } else { hanging-indent },
     separator: separator,
-    (
+    terms.item(
       label,
       _format-points(points, points-prefix, points-suffix, points-separate, label-weight)
-        + h(first-line-indent, weak: true)
+        + h(first-line-indent)
         + _format-content[#body],
     ),
   )
+  /*   let body = list(
+    marker: label,
+    indent: indent,
+    body-indent: 1em,
+    _format-points(points, points-prefix, points-suffix, points-separate)
+      + _format-content[#body],
+  ) */
   v(top)
   grid(
     columns: 2,
