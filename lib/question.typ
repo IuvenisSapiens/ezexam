@@ -2,6 +2,17 @@
 #import "const.typ": HANDOUTS, _QUESTION
 #import "counter.typ": counter-chapter, counter-placeholder, counter-question
 #import "tools.typ": _format-content
+#let num_list = ()
+#for i in range(1, 100) {
+  num_list.push(numbering("一、", i))
+}
+// #num_list
+#let single-score-box() = table(
+  columns: 1,
+  inset: 8pt,
+  text(size: 1.2em)[得分],
+  box(width: 1.2em, height: 1.2em, repeat[]),
+)
 
 // 设置每节每题的默认分数
 #let set-pts(..pts) = {
@@ -60,13 +71,13 @@
   },
 )
 
-#let _format-points(points, prefix, suffix, separate) = {
+#let _format-points(points, prefix, suffix, separate, label-weight) = {
   if points == none { return }
   assert(
     type(points) in (int, float) and points > 0,
     message: "points expected positive number, found " + repr(points),
   )
-  [#box(prefix)#points#suffix#if separate [ \ ]]
+  [#box(text(prefix + str(points) + suffix, weight: label-weight))~#if separate [ \ ]]
 }
 
 #let _format-ref-prefix(chapter, headings) = {
@@ -94,44 +105,52 @@
   ref-on: false,
   show-ref-prefix: true,
   supplement: none,
+  score-box: false,
 ) = context {
   set par(leading: line-height) if line-height != auto
   let chapters = counter-chapter.get()
   let headings = counter(heading).get()
+  let label-format = label
+  let separator = if num_list.contains(label) { h(0em, weak: true) } else { h(1em, weak: true) }
   let label = _format-label(label, label-color, label-weight, with-heading-label, headings)
   let body = terms(
     indent: indent,
     hanging-indent: if hanging-indent == auto { measure(label).width + 1em } else { hanging-indent },
-    separator: h(1em, weak: true),
+    separator: separator,
     (
       label,
-      _format-points(points, points-prefix, points-suffix, points-separate)
+      _format-points(points, points-prefix, points-suffix, points-separate, label-weight)
         + h(first-line-indent, weak: true)
         + _format-content[#body],
     ),
   )
   v(top)
-  if ref-on [
-    #assert(supplement != auto, message: "supplement expected none, str, content, function")
-    #show figure.where(kind: _QUESTION): it => {
-      set block(breakable: true)
-      align(left, it.body)
-    }
-    #let ref-prefix = none
-    #figure(
-      supplement: {
-        ref-prefix = _format-ref-prefix(chapters.first(), headings)
-        supplement
-        if show-ref-prefix [#ref-prefix.replace("-", " - ")#h(-.25em, weak: true)]
-        ref-prefix = std.label(ref-prefix + str(counter-question.get().first() + 1))
-      },
-      kind: _QUESTION,
-      body,
-    )#ref-prefix
-  ] else {
-    counter-question.step()
-    body
-  }
+  grid(
+    columns: 2,
+    column-gutter: if score-box { 1em } else { 0em },
+    if score-box { single-score-box() } else { none },
+    if ref-on [
+      #assert(supplement != auto, message: "supplement expected none, str, content, function")
+      #show figure.where(kind: _QUESTION): it => {
+        set block(breakable: true)
+        align(left, it.body)
+      }
+      #let ref-prefix = none
+      #figure(
+        supplement: {
+          ref-prefix = _format-ref-prefix(chapters.first(), headings)
+          supplement
+          if show-ref-prefix [#ref-prefix.replace("-", " - ")#h(-.25em, weak: true)]
+          ref-prefix = std.label(ref-prefix + str(counter-question.get().first() + 1))
+        },
+        kind: _QUESTION,
+        body,
+      )#ref-prefix
+    ] else {
+      counter-question.step()
+      body
+    },
+  )
   v(bottom)
   // 更新占位符上的题号
   context counter-placeholder.update(..counter-question.get())

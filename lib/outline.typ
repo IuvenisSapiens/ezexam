@@ -115,7 +115,7 @@
     columns: if columns == auto { info.len() } else { columns },
     gutter: gap,
     inset: (top: top, bottom: bottom),
-    ..for (key, value) in info { ([#key：#value],) }
+    ..for (key, value) in info { ([#key#value],) }
   )
 }
 
@@ -153,6 +153,8 @@
 
 #let solution(
   body,
+  label-format: "1.", 
+  spacing: .75em,
   title: none,
   title-size: 12pt,
   title-weight: 700,
@@ -207,8 +209,8 @@
     #let label = none
     #let space = 0em
     #if show-number {
-      label = context numbering("1.", ..counter-explain.get())
-      space = .75em
+      label = context numbering(label-format, ..counter-explain.get())
+      space = spacing
     }
     #terms(
       hanging-indent: 0em,

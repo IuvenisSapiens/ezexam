@@ -307,13 +307,13 @@
   set math.equation(numbering: "（1）", supplement: [Eq -]) if mode == HANDOUTS
   show math.equation: set text(font: font)
   let space = h(.25em, weak: true)
-  show math.equation.where(block: false): it => space + math.display(it) + space
+  // show math.equation.where(block: false): it => space + math.display(it) + space
   show "∥": [#space\//#space]
 
   // 中文着重号
   let han-zi = regex("\p{Han}")
   show strong: content => {
-    show han-zi: it => box(place(text("·", .8em), dx: .45em, dy: .75em) + it)
+    // show han-zi: it => box(place(text("·", .8em), dx: .45em, dy: .75em) + it)
     content.body
   }
 
