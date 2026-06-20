@@ -50,6 +50,7 @@
   bottom: 0pt,
 ) = context {
   let mode = mode-state.get()
+  set par(spacing: 1.3em)
   v(top)
   align(
     position,
@@ -80,7 +81,8 @@
   })
 }
 
-#let subject(body, size: 21.5pt, spacing: 1em, font: heiti, top: -1.3em, bottom: -1.3em) = {
+#let subject(body, size: 21.5pt, spacing: 1em, font: heiti, top: 0pt, bottom: 0pt) = {
+  set par(spacing: 1.3em)
   v(top)
   align(center, text(tracking: spacing, font: font, size)[#body])
   v(bottom)
