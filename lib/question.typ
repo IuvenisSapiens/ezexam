@@ -39,8 +39,9 @@
   })
 }
 
+#let _default-cnt-pts = (0, none, 0)
 #let _current-chapter-q-cnt-pts() = (
-  question-count-points-state.final().at(counter-chapter.get().first() - 1, default: ((0, none, 0),))
+  question-count-points-state.final().at(counter-chapter.get().first() - 1, default: (_default-cnt-pts,))
 )
 
 #let _current-sec-q-cnt-pts(idx) = context {
@@ -50,7 +51,7 @@
     counter(heading).update(1)
   }
 
-  [#_current-chapter-q-cnt-pts().at(heading-idx, default: (0, none, 0)).at(idx)]
+  [#_current-chapter-q-cnt-pts().at(heading-idx, default: _default-cnt-pts).at(idx)]
 }
 
 // 当前小节的题目数量、每题分数、小节分数、总分、总题数
@@ -59,20 +60,6 @@
 #let sec-pts = _current-sec-q-cnt-pts(-1)
 #let tot-pts = context _current-chapter-q-cnt-pts().fold(0, (acc, (.., sec-pts)) => acc + sec-pts)
 #let tot-q-cnt = context _current-chapter-q-cnt-pts().fold(0, (acc, (sec-q-cnt, ..)) => acc + sec-q-cnt)
-
-// 更新每个小节的问题数、总分数
-#let _update-question-count-points(points, chapter-idx, heading-idx) = {
-  if heading-idx < 0 { return } // 题目没有小节标题时
-  question-count-points-state.update(pre => {
-    if pre.len() == chapter-idx { pre.push(((0, none, 0),)) } // 当前章节未设置分数时
-    let chapter-cnt-pts = pre.at(chapter-idx)
-    if chapter-cnt-pts.len() == heading-idx { chapter-cnt-pts.push((0, none, 0)) } // 当前小节没有初始化时
-    let (cnt, per-pts, sec-pts) = chapter-cnt-pts.at(heading-idx)
-    chapter-cnt-pts.at(heading-idx) = (cnt + 1, per-pts, sec-pts + if points != none { points } else { per-pts })
-    pre.at(chapter-idx) = chapter-cnt-pts
-    pre
-  })
-}
 
 #let _format-label(label, label-color, label-weight, with-heading-label, headings) = context counter-question.display(
   num => {
@@ -95,7 +82,7 @@
 }
 
 #let _format-ref-prefix(chapter, headings) = {
-  if chapter == 0 { chapter = "1" }
+  if chapter == 0 { chapter = 1 }
   let heading-label = headings.filter(item => item != 0)
   str(chapter) + if heading-label != () { "-" + heading-label.map(str).join(".") } + "-"
 }
@@ -122,7 +109,7 @@
   score-box: false,
 ) = context {
   set par(leading: line-height) if line-height != auto
-  let chapters = counter-chapter.get()
+  let chapter = counter-chapter.get().first()
   let headings = counter(heading).get()
   let label-format = label
   let separator = if num_list.contains(label) { h(0em, weak: true) } else { h(1em, weak: true) }
@@ -153,7 +140,7 @@
       #let ref-prefix = none
       #figure(
         supplement: {
-          ref-prefix = _format-ref-prefix(chapters.first(), headings)
+          ref-prefix = _format-ref-prefix(chapter, headings)
           supplement
           if show-ref-prefix [#ref-prefix.replace("-", " - ")#h(-.25em, weak: true)]
           ref-prefix = std.label(ref-prefix + str(counter-question.get().first() + 1))
@@ -167,7 +154,20 @@
     },
   )
   v(bottom)
+
   // 更新占位符上的题号
   context counter-placeholder.update(..counter-question.get())
-  _update-question-count-points(points, chapters.first() - 1, headings.first() - 1)
+
+  // 更新每小节题目数，总分等
+  let chapter-idx = chapter - 1
+  let heading-idx = headings.first() - 1
+  question-count-points-state.update(pre => {
+    if pre.len() == chapter-idx or pre == () { pre.push((_default-cnt-pts,)) } // 当前章节未设置分数时
+    let chapter-cnt-pts = pre.at(chapter-idx)
+    if chapter-cnt-pts.len() == heading-idx { chapter-cnt-pts.push(_default-cnt-pts) } // 当前小节没有初始化时
+    let (cnt, per-pts, sec-pts) = chapter-cnt-pts.at(heading-idx)
+    chapter-cnt-pts.at(heading-idx) = (cnt + 1, per-pts, sec-pts + if points != none { points } else { per-pts })
+    pre.at(chapter-idx) = chapter-cnt-pts
+    pre
+  })
 }

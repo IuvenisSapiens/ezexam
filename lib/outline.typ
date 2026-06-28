@@ -2,7 +2,7 @@
 #import "const.typ": EXAM
 #import "state.typ": answer-state, chapter-pages-state, mode-state, subject-state
 #import "counter.typ": counter-chapter, counter-explain, counter-question, counter-title
-#import "tools.typ": _create-seal, _trim-content
+#import "tools.typ": _create-seal, _format-content, page-restart
 #import "question.typ": tot-pts
 
 // 封面
@@ -33,7 +33,6 @@
   counter-chapter.step()
   set heading(numbering: _ => counter-chapter.display(num => box(width: 1em, align(right)[#num.~])))
   place(hide[= #body <chapter>])
-  counter(heading.where(level: 1)).update(0)
   counter(heading).update(0)
   counter-question.update(0)
 }
@@ -50,7 +49,7 @@
   bottom: 0pt,
 ) = context {
   let mode = mode-state.get()
-  set par(spacing: 1.3em)
+  set par(spacing: 1.3em) if mode == EXAM
   v(top)
   align(
     position,
@@ -144,7 +143,7 @@
   if not answer-state.get() { return }
   let pre-mode = mode-state.get()
   let set-mode(_mode) = mode-state.update(_mode)
-  counter-explain.update(0) // 解析题号从 1 开始重新编号
+  counter-explain.update(0)
   pagebreak(weak: true)
   set-mode(none)
   title(name)
@@ -174,16 +173,17 @@
   line-height: auto,
   top: 0pt,
   bottom: 0pt,
-  inset: (x: 10pt, top: 20pt, bottom: 20pt),
+  inset: (:),
   show-number: true,
 ) = context {
   if not answer-state.get() { return }
   assert(type(inset) == dictionary, message: "inset expected dictionary, found " + str(type(inset)))
+  let inset = (x: 8pt, top: 20pt, bottom: 20pt) + inset
   v(top)
   block(
     width: 100%,
     breakable: breakable,
-    inset: (x: 10pt, top: 20pt, bottom: 20pt) + inset,
+    inset: inset,
     radius: radius,
     stroke: border-stroke,
     fill: bg-color,
@@ -191,7 +191,7 @@
     #set par(leading: line-height) if line-height != auto
     // 标题
     #if title != none {
-      let title-box = box(fill: title-bg-color, inset: 6pt, radius: title-radius, text(
+      let title-box = box(fill: title-bg-color, inset: 5pt, radius: title-radius, text(
         title-size,
         weight: title-weight,
         tracking: 3pt,
@@ -201,22 +201,16 @@
       place(
         title-align,
         dx: title-x,
-        dy: -inset.top - measure(title-box).height / 2 + title-y,
+        dy: -inset.top - measure(title-box).height / 2,
         title-box,
       )
     }
 
     // 解析题号的格式化
     #counter-explain.step()
-    #let space = 0em
-    #let label = if show-number {
-      context numbering(label-format, ..counter-explain.get())
-      space = spacing
-    }
-    #terms(
-      hanging-indent: 0em,
-      separator: h(space, weak: true),
-      terms.item(label, text(color, _trim-content(body))),
+    #list(
+      marker: if show-number { context numbering("1.", ..counter-explain.get()) },
+      text(color, _format-content(body)),
     )
   ]
   v(bottom)
@@ -240,7 +234,8 @@
   line-type: "solid",
   supplement: none,
 ) = {
-  set page(margin: .5in, footer: none)
+  page-restart()
+  set page(margin: .5in, footer: none, background: none, flipped: false, columns: 1)
   title(spacing: 1em, bottom: 0pt, name)
   _create-seal(line-type: line-type, supplement: supplement, info: student-info)
 }
