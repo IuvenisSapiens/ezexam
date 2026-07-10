@@ -1,9 +1,9 @@
-#import "@preview/ezexam:0.3.2": *
+#import "../ezexam.typ": *
 
 #show: setup.with(
   mode: EXAM,
-  // paper: a3,
-  // show-answer: true,
+  paper: a3,
+  show-answer: true,
   show-gap-line: true,
 )
 

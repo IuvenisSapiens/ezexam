@@ -1,7 +1,7 @@
 #import "state.typ": mode-state, question-count-points-state
 #import "const.typ": HANDOUTS, _QUESTION
 #import "counter.typ": counter-chapter, counter-placeholder, counter-question
-#import "tools.typ": _format-content
+#import "tools.typ": _trim-content
 #let num_list = ()
 #for i in range(1, 100) {
   num_list.push(numbering("一、", i))
@@ -94,7 +94,7 @@
   hanging-indent: auto,
   label: "1.1.1.1.1.1.",
   label-color: black,
-  label-weight: 400,
+  label-weight: 100,
   with-heading-label: false,
   points: none,
   points-separate: true,
@@ -122,7 +122,7 @@
       label,
       _format-points(points, points-prefix, points-suffix, points-separate, label-weight)
         + h(first-line-indent)
-        + _format-content[#body],
+        + _trim-content[#body],
     ),
   )
 
