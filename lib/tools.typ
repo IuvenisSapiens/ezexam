@@ -23,15 +23,22 @@
 
 #let _trim-content(body) = {
   if _is_empty(body) { return body }
-  show parbreak: [ \ ] // 去除数学公式在 question 方法中，新的段落以数学公式开头时，左侧加间距的问题(typst留下的坑)
   if body.has("children") {
     body = body.children
     if _is_empty(body.first()) { body = body.slice(1) } // 去除开头的空行，换行
     body.first() = _trim-left-space(body.first())
-    body.join()
-  } else {
-    _trim-left-space(body)
+    return body.join()
   }
+  _trim-left-space(body)
+}
+
+// 去除数学公式在 question 方法中，换行后以数学公式开头时，最左侧加间距的问题(typst留下的坑)
+#let _format-content(body) = {
+  body = _trim-content(body)
+  if not body.has("children") { return body }
+  let children = body.children
+  if parbreak() not in children { return body }
+  children.map(child => if child == parbreak() [ \ ] else { child }).join()
 }
 
 // 生成弥封线
