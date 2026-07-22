@@ -28,29 +28,16 @@
   counter(page).update(0)
 }
 
-#let chapter(body, label: auto, color: black, size: 1.4em, font: auto) = context {
+#let chapter(body, label: "1．", color: black, size: 1.4em, font: auto) = context {
   pagebreak(weak: true)
   counter-chapter.step()
   let font = if font == auto { text.font } else { font }
-  let is-exam = mode-state.get() == EXAM
   set heading(
     offset: 0,
-    numbering: _ => {
-      set text(color, size, font: font)
-      numbering(
-        if label == auto {
-          if is-exam { "1．" } else { "第1章" }
-        } else { label },
-        ..counter-chapter.get(),
-      )
-    },
+    numbering: _ => text(color, size, font: font, numbering(label, ..counter-chapter.get())),
   )
   let body = align(center)[= #text(body, color, size, font: font) <chapter>]
-  if is-exam {
-    place(hide(body))
-  } else {
-    body
-  }
+  if mode-state.get() == EXAM { place(hide(body)) } else { body }
   counter(heading).update(0)
   counter-question.update(0)
 }
