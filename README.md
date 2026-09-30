@@ -44,7 +44,7 @@ This template can help Chinese university, primary, middle and high school teach
 ## Changelog
 ### 0 . 4 . 0
 + ⚠️ `typst` 版本更新至 `0.15.0`
-+ ⚠️ 修改字体，调整 𝑗𝑓𝑧𝜋∅± 的字体为 `STIX Two Math` ，修复 𝑗𝑓 加绝对值后，左侧绝对值的线被遮挡的问题
++ ⚠️ 调整字体，去除 covers 以提高性能
 + 修复公式中的中文字体某些场景下自动加粗的问题
 + 修复 `strong` 方法不生效及 `terms` 方法 `term` 不加粗的问题
 + 修复 `solution` 方法，当以数学公式开头时，左侧和上一段落对不齐的问题
@@ -74,7 +74,7 @@ This template can help Chinese university, primary, middle and high school teach
 + `setup` 方法，新增参数 `outline-chapter-width` , `outline-chapter-weight` , `outline-chapter-color` , 现在可以为目录页的章节部分添加样式及对齐方式
 + 将参考答案加入到目录显示中
 + 新增输入带圈数字 `circ-num` 方法，该方法可方便输入带圈数字
-+ 现在 page 支持设置 margin 的 inside 和 outside，为了方便设置，添加常量 `in-outside`
++ 支持设置页面 `margin` 的 `inside` 和 `outside`，为了方便设置，添加常量 `in-outside`
 
 
 ### 0 . 3 . 1
