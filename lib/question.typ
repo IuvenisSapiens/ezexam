@@ -1,7 +1,7 @@
 #import "state.typ": mode-state, question-count-points-state
 #import "const.typ": HANDOUTS, OUTLINE, _QUESTION
 #import "counter.typ": counter-chapter, counter-placeholder, counter-question
-#import "tools.typ": _format-content
+#import "tools.typ": _list-numbering, _format-content
 #let num_list = ()
 #for i in range(1, 100) {
   num_list.push(numbering("一、", i))
@@ -104,6 +104,7 @@
   label-color: black,
   label-weight: 100,
   with-heading-label: false,
+  sub-label: auto,
   points: none,
   points-separate: true,
   points-prefix: "（",
@@ -117,6 +118,7 @@
   score-box: false,
 ) = context {
   set par(leading: line-height) if line-height != auto
+  set enum(numbering: _list-numbering(sub-label), full: true) if sub-label != auto
   let chapter = counter-chapter.get().first()
   // 讲义模式下，由于标题设置了offset = 1，这里的headings第一个均为 0，需要去掉
   let headings = counter(heading).get().filter(v => v > 0)
