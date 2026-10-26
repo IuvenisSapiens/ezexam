@@ -47,6 +47,7 @@ This template can help Chinese university, primary, middle and high school teach
 + ⚠️ 调整字体，去除 covers 以提高性能
 + ⚠️ 修改 `choices` 方法的参数 `sapcing` ，重命名为 `body-indent`
 + ⚠️ 修改 `setup , question , solution` 方法的参数 `line-height` ，重命名为 `line-spacing` ，更加符合语义
++ ⚠️ 修改 `solution-block` 方法名为 `solution-env`
 + ⚠️ 着重号重构为 `emph-dot` 方法；
    感谢 [@arshtyi](https://github.com/arshtyi) 提交的 ([pr#9](https://github.com/gbchu/ezexam/pull/9))
 + 修复公式中的中文字体某些场景下自动加粗的问题
@@ -68,11 +69,12 @@ This template can help Chinese university, primary, middle and high school teach
   + `font-math` 参数回归，方便单独设置数学字体
   + 新增参数 `heading-body-indent`
   + 新增参数 `outline-chapter-width` , `outline-chapter-weight` , `outline-chapter-color` , 现在可以为目录页的章节部分添加样式及对齐方式
+  + `paper` 参数新增预设值，`a3-3cols`, `a4-2cols`, `a4-flipped`, `a4-flipped-2cols`
 + `question` 方法
   + 修改参数 `points-prefix`, `label-weight` 的默认值；
   + 新增 `sub-label` 参数，方便设置解答题中子问题的编号方式
 + 修改 `subject` 方法的参数 `top, bottom` 默认值
-+ `solution-block` 方法新增参数 `paper` ，该参数可以单独设置解析页面显示方式，比如试卷页需要 `a3` 显示，解析页 `a4 `显示
++ `solution-env` 方法新增参数 `paper` ，该参数可以单独设置解析页面显示方式，比如试卷页需要 `a3` 显示，解析页 `a4 `显示
 + 新增 `set-per-pts` 方法，`sec-q-cnt`, `per-pts`, `sec-pts`, `tot-pts`, `tot-q-cnt` 常量；方便自动统计小节的题量、试卷总题量、小节的总分、试卷总分等；
   感谢 [@Naptie](https://github.com/Naptie) 提交的 ([pr#8](https://github.com/gbchu/ezexam/pull/8))
 + `chapter` 方法
