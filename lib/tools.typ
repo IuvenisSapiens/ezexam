@@ -236,3 +236,6 @@
     "⑳",
   ).at(num)
 }
+
+#let eu = $upright(e)$
+#let iu = $upright(i)$
